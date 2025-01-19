@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+  <link rel="stylesheet" href="/static/styles/chat.css">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Chat App</div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-footer">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const userInput = document.getElementById("userInput").value;
+      if (!userInput.trim()) return;
+
+      // Display user message
+      displayMessage(userInput, "user-message");
+
+      // Clear input field
+      document.getElementById("userInput").value = "";
+
+      // Make POST request to FastAPI endpoint
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `user_input=${encodeURIComponent(userInput)}`,
+        });
+        
+        const data = await response.json();
+        
+        // Display API response
+        displayMessage(data.response || "No response from server", "bot-message");
+      } catch (error) {
+        displayMessage("Error fetching API: " + error.message, "bot-message");
+      }
+    }
+
+    function displayMessage(message, className) {
+      const chatBody = document.getElementById("chatBody");
+      const messageDiv = document.createElement("div");
+      messageDiv.textContent = message;
+      messageDiv.className = `chat-message ${className}`;
+      chatBody.appendChild(messageDiv);
+      chatBody.scrollTop = chatBody.scrollHeight; // Scroll to the latest message
+    }
+  </script>
+</body>
+</html>

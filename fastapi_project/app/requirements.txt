@@ -1,0 +1,9 @@
+
+    fastapi
+    uvicorn
+    phidata
+    google-search-results
+    google-generativeai
+    openai
+    jinja2
+    huggingface_hub
